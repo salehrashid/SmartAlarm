@@ -6,7 +6,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.app.smartalarm.data.Alarm
 import com.app.smartalarm.databinding.ItemRowReminderAlarmBinding
 
-class AlarmAdapter(private val listAlarm: ArrayList<Alarm>) : RecyclerView.Adapter<AlarmAdapter.MyViewHolder>() {
+class AlarmAdapter : RecyclerView.Adapter<AlarmAdapter.MyViewHolder>() {
+
+    var listAlarm: List<Alarm> = arrayListOf()
 
     inner class MyViewHolder(val binding: ItemRowReminderAlarmBinding) :
         RecyclerView.ViewHolder(binding.root)
@@ -25,4 +27,8 @@ class AlarmAdapter(private val listAlarm: ArrayList<Alarm>) : RecyclerView.Adapt
     }
 
     override fun getItemCount() = listAlarm.size
+
+    fun setData(data: List<Alarm>){
+        this.listAlarm = data
+    }
 }

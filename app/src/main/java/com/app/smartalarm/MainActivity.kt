@@ -27,8 +27,8 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         CoroutineScope(Dispatchers.IO).launch {
-            val alarm = db.alarmDao().getAlarm() as ArrayList<Alarm>
-            alarmAdapter = AlarmAdapter(alarm)
+            val alarm = db.alarmDao().getAlarm()
+            alarmAdapter?.setData(alarm)
             Log.i("GetAlarm", "setupRecyclerView: with this data $alarm")//background thread
         }
     }
@@ -39,15 +39,15 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         initView()
-        setupRecylerView()
+        setupRecyclerView()
     }
 
-    private fun setupRecylerView() {
+    private fun setupRecyclerView() {
         binding.apply {
-            alarmAdapter = AlarmAdapter(arrayListOf())
-                rvReminderAlarm.apply {
-                    layoutManager = LinearLayoutManager(context)
-                    adapter = alarmAdapter
+            alarmAdapter = AlarmAdapter()
+            rvReminderAlarm.apply {
+                layoutManager = LinearLayoutManager(context)
+                adapter = alarmAdapter
             }
         }
     }
