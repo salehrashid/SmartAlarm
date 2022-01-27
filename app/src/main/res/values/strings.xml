@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">SmartAlarm</string>
+    <string name="image_icon_one_time_alarm">Image Icon One Time Alarm</string>
+    <string name="txt_set">Set</string>
+    <string name="txt_one_time_alarm">One Time Alarm</string>
+    <string name="txt_date">Date</string>
+    <string name="txt_set_date">Set Date</string>
+    <string name="txt_time">Time</string>
+    <string name="txt_set_time">Set Time</string>
+    <string name="txt_note">Note</string>
+    <string name="txt_input_your_note">Input Your Note</string>
+    <string name="txt_add_set_alarm">Add Set Alarm</string>
+    <string name="txt_cancel">Cancel</string>
+    <string name="txt_clock">14:13</string>
+    <string name="txt_toast_add_alarm"><![CDATA[Please set Date & Time]]></string>
+</resources>
