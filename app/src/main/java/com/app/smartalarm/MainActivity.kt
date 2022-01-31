@@ -4,17 +4,16 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.app.smartalarm.adapter.AlarmAdapter
-import com.app.smartalarm.data.Alarm
 import com.app.smartalarm.data.local.AlarmDB
 import com.app.smartalarm.databinding.ActivityMainBinding
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.collections.ArrayList
 
 class MainActivity : AppCompatActivity() {
 
@@ -26,11 +25,17 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        CoroutineScope(Dispatchers.IO).launch {
-            val alarm = db.alarmDao().getAlarm()
-            alarmAdapter?.setData(alarm)
-            Log.i("GetAlarm", "setupRecyclerView: with this data $alarm")//background thread
+
+        db.alarmDao().getAlarm().observe(this){
+            alarmAdapter?.setData(it)
+            Log.i("GetAlarm", "setupRecyclerView: with this data $it")
         }
+
+//        CoroutineScope(Dispatchers.IO).launch {
+//            val alarm = db.alarmDao().getAlarm()
+//            alarmAdapter?.setData(alarm)
+//            Log.i("GetAlarm", "setupRecyclerView: with this data $alarm")//background thread
+//        }// logcat information, mencari tau infromasi di logcat
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,6 +54,7 @@ class MainActivity : AppCompatActivity() {
                 layoutManager = LinearLayoutManager(context)
                 adapter = alarmAdapter
             }
+            swipeToDelete(rvReminderAlarm)
         }
     }
 
@@ -63,6 +69,35 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
+
+    private fun swipeToDelete(recyclerView: RecyclerView){
+        ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(
+            0,
+            ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT
+        ) {
+            override fun onMove(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
+            ): Boolean {
+                return false
+            }
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                val deletedItem = alarmAdapter?.listAlarm?.get(viewHolder.adapterPosition)
+                CoroutineScope(Dispatchers.IO).launch {
+                    deletedItem?.let { db.alarmDao().deleteAlarm(it) }
+                    Log.i("DeleteAlarm" , "onSwiped: success deleted alarm with $deletedItem")
+                }
+//                alarmAdapter?.notifyItemRemoved(viewHolder.adapterPosition)
+            }
+        }).attachToRecyclerView(recyclerView)
+    }
+
+
+
+
+
     //main thread tugas nya adalah menangani layout seperti menampilkan recycler view dan memberikan access click
 
 
