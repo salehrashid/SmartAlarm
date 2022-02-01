@@ -10,6 +10,7 @@ import com.app.smartalarm.databinding.ActivityOneTimeAlarmBinding
 import com.app.smartalarm.fragment.DateDialogFragment
 import com.app.smartalarm.fragment.TimeDialogFragment
 import com.app.smartalarm.help.timeFormatter
+import kotlinx.android.synthetic.main.activity_one_time_alarm.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -65,6 +66,9 @@ class OneTImeAlarmActivity : AppCompatActivity(), DateDialogFragment.DialogDateL
                     finish()
                 }
             }
+        }
+        btn_cancel.setOnClickListener {
+            finish()
         }
     }
 
