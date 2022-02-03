@@ -46,6 +46,7 @@ class RepeatingAlarmActivity : AppCompatActivity(), TimeDialogFragment.TimeDialo
                         Toast.LENGTH_SHORT
                     ).show()
                 }
+                //IO menjalankan background task
                 CoroutineScope(Dispatchers.IO).launch {
                     db.alarmDao().addAlarm(
                         Alarm(

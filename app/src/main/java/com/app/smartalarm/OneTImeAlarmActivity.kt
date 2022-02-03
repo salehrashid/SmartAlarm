@@ -23,6 +23,8 @@ class OneTImeAlarmActivity : AppCompatActivity(), DateDialogFragment.DialogDateL
     private val binding get() = _binding as ActivityOneTimeAlarmBinding
 
     private val db by lazy { AlarmDB(this) }
+    private var alarmService: AlarmReceiver? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_one_time_alarm)
@@ -30,6 +32,7 @@ class OneTImeAlarmActivity : AppCompatActivity(), DateDialogFragment.DialogDateL
         _binding = ActivityOneTimeAlarmBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        alarmService = AlarmReceiver()//ini yang disebut inisialisasi
         initView()
     }
 
@@ -55,6 +58,7 @@ class OneTImeAlarmActivity : AppCompatActivity(), DateDialogFragment.DialogDateL
                         Toast.LENGTH_SHORT
                     ).show()
                 }
+                alarmService?.setOneTimeAlarm(applicationContext, 0, date, time, message)
                 CoroutineScope(Dispatchers.IO).launch {
                     db.alarmDao().addAlarm(Alarm(
                         0,
