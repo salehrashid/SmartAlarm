@@ -1,7 +1,9 @@
 package com.app.smartalarm
 
 import android.app.*
+import android.app.AlarmManager.INTERVAL_DAY
 import android.content.BroadcastReceiver
+import android.content.ContentValues.TAG
 import android.content.Context
 import android.content.Intent
 import android.media.Ringtone
@@ -72,7 +74,7 @@ class AlarmReceiver : BroadcastReceiver(){
         val calendar = Calendar.getInstance()
         //date
         calendar.set(Calendar.DAY_OF_MONTH, converterData(dateArray)[0])
-        calendar.set(Calendar.MONTH, converterData(dateArray)[1])
+        calendar.set(Calendar.MONTH, converterData(dateArray)[1]-1)
         calendar.set(Calendar.YEAR, converterData(dateArray)[2])
         //time
         calendar.set(Calendar.HOUR, converterData(timeArray)[0])
@@ -82,6 +84,30 @@ class AlarmReceiver : BroadcastReceiver(){
         val pendingIntent = PendingIntent.getBroadcast(context, 101, intent,0)//broadcast untuk menerima data dan dijadikan notif
         alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.timeInMillis,pendingIntent)
         Toast.makeText(context, "Success set One Time Alarm.", Toast.LENGTH_LONG).show()
+        Log.i("SetAlarmNotification", "setOneTimeAlarm: Alarm will rings on ${calendar.time}")
+    }
+
+    fun setRepeatingAlarm(context: Context, type: Int, time: String, message: String){
+        val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+
+        val intent = Intent(context, AlarmReceiver::class.java)
+        intent.putExtra("message", message)
+        intent.putExtra("type", type)
+
+        val timeArray = time.split(":".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()//toRegex untuk memisahkan array
+        val calendar = Calendar.getInstance()
+        calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(timeArray[0]))
+        calendar.set(Calendar.MINUTE, Integer.parseInt(timeArray[1]))
+        calendar.set(Calendar.SECOND, 0)
+
+        val pendingIntent = PendingIntent.getBroadcast(context, 102, intent, 0)
+        alarmManager.setInexactRepeating(
+            AlarmManager.RTC_WAKEUP,
+            calendar.timeInMillis,
+            AlarmManager.INTERVAL_DAY,
+            pendingIntent
+        )
+        Toast.makeText(context, "Success Set Up Repeating Alarm", Toast.LENGTH_LONG).show()
     }
 
     fun converterData(array: Array<String>) : List<Int>{
