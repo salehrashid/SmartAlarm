@@ -17,7 +17,8 @@ import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
 
-class OneTImeAlarmActivity : AppCompatActivity(), DateDialogFragment.DialogDateListener, TimeDialogFragment.TimeDialogListener {
+class OneTImeAlarmActivity : AppCompatActivity(), DateDialogFragment.DialogDateListener,
+    TimeDialogFragment.TimeDialogListener {
 
     private var _binding: ActivityOneTimeAlarmBinding? = null
     private val binding get() = _binding as ActivityOneTimeAlarmBinding
@@ -36,7 +37,7 @@ class OneTImeAlarmActivity : AppCompatActivity(), DateDialogFragment.DialogDateL
         initView()
     }
 
-    private fun initView(){
+    private fun initView() {
         binding.apply {
             btnSetDateOneTime.setOnClickListener {
                 val datePickerFragment = DateDialogFragment()
@@ -44,7 +45,7 @@ class OneTImeAlarmActivity : AppCompatActivity(), DateDialogFragment.DialogDateL
             }
 
             btnSetTimeOneTime.setOnClickListener {
-                val timePickerFragment =  TimeDialogFragment()
+                val timePickerFragment = TimeDialogFragment()
                 timePickerFragment.show(supportFragmentManager, "timePickerDialog")
             }
 
@@ -53,21 +54,31 @@ class OneTImeAlarmActivity : AppCompatActivity(), DateDialogFragment.DialogDateL
                 val time = tvOnceTime.text.toString()
                 val message = edtNoteOneTime.text.toString()
 
-                if (date == "Date" && time == "Time"){
-                    Toast.makeText(applicationContext, getString(R.string.txt_toast_add_alarm),
+                if (date == "Date" && time == "Time") {
+                    Toast.makeText(
+                        applicationContext, getString(R.string.txt_toast_add_alarm),
                         Toast.LENGTH_SHORT
                     ).show()
-                }
-                alarmService?.setOneTimeAlarm(applicationContext, 0, date, time, message)
-                CoroutineScope(Dispatchers.IO).launch {
-                    db.alarmDao().addAlarm(Alarm(
-                        0,
+                } else {
+                    alarmService?.setOneTimeAlarm(
+                        applicationContext,
+                        AlarmReceiver.TYPE_ONE_TIME,
                         date,
                         time,
                         message
-                    ))
-                    Log.i("AddAlarm", "alarm set on: $date $time with message $message")
-                    finish()
+                    )
+                    CoroutineScope(Dispatchers.IO).launch {
+                        db.alarmDao().addAlarm(
+                            Alarm(
+                                0,//selalu mengambil dari index 0 yaitu yang paling baru di create alarm nya
+                                date,
+                                time,
+                                message
+                            )
+                        )
+                        Log.i("AddAlarm", "alarm set on: $date $time with message $message")
+                        finish()
+                    }
                 }
             }
         }

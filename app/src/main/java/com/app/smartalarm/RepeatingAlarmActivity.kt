@@ -20,6 +20,8 @@ class RepeatingAlarmActivity : AppCompatActivity(), TimeDialogFragment.TimeDialo
     private val binding get() = _binding as ActivityRepeatingAlarmBinding
 
     private val db by lazy { AlarmDB(this) }
+    private var alarmReceiver: AlarmReceiver? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_repeating_alarm)
@@ -27,6 +29,7 @@ class RepeatingAlarmActivity : AppCompatActivity(), TimeDialogFragment.TimeDialo
         _binding = ActivityRepeatingAlarmBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        alarmReceiver = AlarmReceiver()
         initView()
     }
 
@@ -45,19 +48,26 @@ class RepeatingAlarmActivity : AppCompatActivity(), TimeDialogFragment.TimeDialo
                         applicationContext, getString(R.string.txt_toast_add_alarm),
                         Toast.LENGTH_SHORT
                     ).show()
-                }
-                //IO menjalankan background task
-                CoroutineScope(Dispatchers.IO).launch {
-                    db.alarmDao().addAlarm(
-                        Alarm(
-                            0,
-                            "Repeating Alarm",
-                            time,
-                            message
-                        )
+                } else {
+                    alarmReceiver?.setRepeatingAlarm(
+                        applicationContext,
+                        AlarmReceiver.TYPE_REPEATING,
+                        time,
+                        message
                     )
-                    Log.i("AddAlarm", "alarm set on: $time with message $message")
-                    finish()
+                    //IO menjalankan background task
+                    CoroutineScope(Dispatchers.IO).launch {
+                        db.alarmDao().addAlarm(
+                            Alarm(
+                                0,
+                                "Repeating Alarm",
+                                time,
+                                message
+                            )
+                        )
+                        Log.i("AddAlarm", "alarm set on: $time with message $message")
+                        finish()
+                    }
                 }
             }
         }
@@ -67,7 +77,6 @@ class RepeatingAlarmActivity : AppCompatActivity(), TimeDialogFragment.TimeDialo
     }
 
     override fun onTimeSetListener(tag: String?, hour: Int, minute: Int) {
-         binding.tvOnceTimeRepeating.text = timeFormatter(hour, minute)
+        binding.tvOnceTimeRepeating.text = timeFormatter(hour, minute)
     }
 }
-
