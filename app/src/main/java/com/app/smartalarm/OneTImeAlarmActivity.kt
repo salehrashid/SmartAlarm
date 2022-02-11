@@ -56,7 +56,7 @@ class OneTImeAlarmActivity : AppCompatActivity(), DateDialogFragment.DialogDateL
 
                 if (date == "Date" && time == "Time") {
                     Toast.makeText(
-                        applicationContext, getString(R.string.txt_toast_add_alarm),
+                        applicationContext, getString(R.string.txt_toast_add_alarm_one),
                         Toast.LENGTH_SHORT
                     ).show()
                 } else {

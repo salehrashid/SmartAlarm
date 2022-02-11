@@ -45,7 +45,7 @@ class RepeatingAlarmActivity : AppCompatActivity(), TimeDialogFragment.TimeDialo
 
                 if (time == "Time") {
                     Toast.makeText(
-                        applicationContext, getString(R.string.txt_toast_add_alarm),
+                        applicationContext, getString(R.string.txt_toast_add_alarm_repeat),
                         Toast.LENGTH_SHORT
                     ).show()
                 } else {
