@@ -62,7 +62,8 @@ class RepeatingAlarmActivity : AppCompatActivity(), TimeDialogFragment.TimeDialo
                                 0,
                                 "Repeating Alarm",
                                 time,
-                                message
+                                message,
+                                AlarmReceiver.TYPE_REPEATING
                             )
                         )
                         Log.i("AddAlarm", "alarm set on: $time with message $message")

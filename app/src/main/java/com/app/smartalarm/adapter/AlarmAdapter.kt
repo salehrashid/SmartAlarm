@@ -4,6 +4,8 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import com.app.smartalarm.AlarmReceiver
+import com.app.smartalarm.R
 import com.app.smartalarm.data.Alarm
 import com.app.smartalarm.databinding.ItemRowReminderAlarmBinding
 
@@ -24,6 +26,11 @@ class AlarmAdapter : RecyclerView.Adapter<AlarmAdapter.MyViewHolder>() {
             itemDateAlarm.text = alarm.date
             itemTimeAlarm.text = alarm.time
             itemNoteAlarm.text = alarm.message
+            if (alarm.type == AlarmReceiver.TYPE_ONE_TIME){
+                itemImgOneTime.setImageResource(R.drawable.ic_one_time)
+            }else{
+                itemImgOneTime.setImageResource(R.drawable.ic_repeating)
+            }
         }
     }
 

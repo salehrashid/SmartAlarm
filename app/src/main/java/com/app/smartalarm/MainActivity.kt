@@ -1,9 +1,11 @@
 package com.app.smartalarm
 
 import android.content.Intent
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -23,10 +25,12 @@ class MainActivity : AppCompatActivity() {
     private var alarmAdapter: AlarmAdapter? = null
     private val db by lazy { AlarmDB(this) } //lazy adalah mempermudah dalam inisialisasi
 
+    private var alarmService: AlarmReceiver? = null
+
     override fun onResume() {
         super.onResume()
 
-        db.alarmDao().getAlarm().observe(this){
+        db.alarmDao().getAlarm().observe(this) {
             alarmAdapter?.setData(it)
             Log.i("GetAlarm", "setupRecyclerView: with this data $it")
         }
@@ -37,12 +41,14 @@ class MainActivity : AppCompatActivity() {
 //            Log.i("GetAlarm", "setupRecyclerView: with this data $alarm")//background thread
 //        }// logcat information, mencari tau infromasi di logcat
     }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         _binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        alarmService = AlarmReceiver()
         initView()
         setupRecyclerView()
     }
@@ -58,9 +64,9 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun initView(){
+    private fun initView() {
         binding.apply {
-            cvSetOneTimeAlarm.setOnClickListener{
+            cvSetOneTimeAlarm.setOnClickListener {
                 startActivity(Intent(this@MainActivity, OneTImeAlarmActivity::class.java))
             }
 
@@ -70,7 +76,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun swipeToDelete(recyclerView: RecyclerView){
+    private fun swipeToDelete(recyclerView: RecyclerView) {
         ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(
             0,
             ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT
@@ -83,23 +89,21 @@ class MainActivity : AppCompatActivity() {
                 return false
             }
 
+            @RequiresApi(Build.VERSION_CODES.S)
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 val deletedItem = alarmAdapter?.listAlarm?.get(viewHolder.adapterPosition)
                 CoroutineScope(Dispatchers.IO).launch {
                     deletedItem?.let { db.alarmDao().deleteAlarm(it) }
-                    Log.i("DeleteAlarm" , "onSwiped: success deleted alarm with $deletedItem")
+                    Log.i("DeleteAlarm", "onSwiped: success deleted alarm with $deletedItem")
                 }
 //                alarmAdapter?.notifyItemRemoved(viewHolder.adapterPosition)
+                deletedItem?.let { alarmService?.cancelAlarm(applicationContext, it.type) }
             }
         }).attachToRecyclerView(recyclerView)
     }
 
 
-
-
-
     //main thread tugas nya adalah menangani layout seperti menampilkan recycler view dan memberikan access click
-
 
 
     //dinonaktifkan karena sudah mendapatkan live tanggal nya di xml

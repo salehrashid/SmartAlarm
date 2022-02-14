@@ -73,7 +73,8 @@ class OneTImeAlarmActivity : AppCompatActivity(), DateDialogFragment.DialogDateL
                                 0,//selalu mengambil dari index 0 yaitu yang paling baru di create alarm nya
                                 date,
                                 time,
-                                message
+                                message,
+                                AlarmReceiver.TYPE_ONE_TIME
                             )
                         )
                         Log.i("AddAlarm", "alarm set on: $date $time with message $message")

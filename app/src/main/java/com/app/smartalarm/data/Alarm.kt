@@ -9,5 +9,6 @@ data class Alarm(
     val id: Int,
     val date: String,
     val time: String,
-    val message: String
+    val message: String,
+    val type: Int
 )
